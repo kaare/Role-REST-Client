@@ -25,5 +25,5 @@ ok(my $obj = RESTExample->new(%testdata), 'New object');
 isa_ok($obj, 'RESTExample');
 
 for my $item (qw/post get put delete/) {
-    ok($obj->can($item), 'Role method $item exists');
+    ok($obj->can($item), "Role method $item exists");
 }

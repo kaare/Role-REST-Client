@@ -8,7 +8,7 @@ has 'code' => (
     is  => 'ro',
 );
 has 'response' => (
-    isa => 'HashRef | ArrayRef',
+    isa => 'HashRef',
     is  => 'ro',
 );
 has 'error' => (
@@ -16,7 +16,7 @@ has 'error' => (
     is  => 'ro',
 );
 has 'data' => (
-    isa => 'HashRef',
+    isa => 'HashRef | ArrayRef',
     is  => 'ro',
 );
 
