@@ -14,8 +14,6 @@ use Role::REST::Client::Response;
 has 'server' => (
     isa => 'Str',
     is  => 'rw',
-	lazy    => 1,
-	builder => '_build_server',
 );
 has 'type' => (
     isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
@@ -25,11 +23,6 @@ has 'type' => (
 has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
 
 no Moose::Util::TypeConstraints;
-
-sub _build_server {
-	my ($self) = @_;
-	$self->{server} ||= $self->config->{server} if $self->config->{server};
-}
 
 sub _serializer {
 	my ($self, $type) = @_;
