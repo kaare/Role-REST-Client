@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 8;
 
 {
 	package RESTExample;
@@ -24,6 +24,6 @@ my %testdata = (
 ok(my $obj = RESTExample->new(%testdata), 'New object');
 isa_ok($obj, 'RESTExample');
 
-for my $item (qw/post get put delete/) {
+for my $item (qw/post get put delete _call _headers/) {
     ok($obj->can($item), "Role method $item exists");
 }

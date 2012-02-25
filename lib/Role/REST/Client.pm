@@ -11,16 +11,41 @@ use Carp qw(confess);
 use Role::REST::Client::Serializer;
 use Role::REST::Client::Response;
 
+with 'MooseX::Traits';
+
 has 'server' => (
-    isa => 'Str',
-    is  => 'rw',
+	isa => 'Str',
+	is  => 'rw',
 );
 has 'type' => (
-    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
-    is  => 'rw',
+	isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
+	is  => 'rw',
 	default => 'application/json',
 );
 has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
+
+has _ua => (
+	isa => 'HTTP::Tiny',
+	is => 'ro',
+	lazy => 1,
+	default => sub {
+		my ($self) = @_;
+		$self->{ua} ||= HTTP::Tiny->new(%{$self->clientattrs});
+		return $self->{ua};
+	},
+);
+has '_headers' => (
+	traits    => ['Hash'],
+	is        => 'ro',
+	isa       => 'HashRef[Str]',
+	default   => sub { {} },
+	handles   => {
+		set_header     => 'set',
+		get_header     => 'get',
+		has_no_headers => 'is_empty',
+		clear_headers  => 'clear',
+	},
+);
 
 no Moose::Util::TypeConstraints;
 
@@ -39,21 +64,14 @@ sub _serializer {
 	return $self->{serializer}{$type};
 }
 
-sub _ua {
-	my ($self) = @_;
-	$self->{ua} ||= HTTP::Tiny->new(%{$self->clientattrs});
-	return $self->{ua};
-}
-
 sub _call {
 	my ($self, $method, $endpoint, $data, $args) = @_;
 	my $uri = $self->server.$endpoint;
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
 	# Otherwise, encode data
-	my %options = (
-		headers => { 'content-type' => $self->_serializer->content_type },
-	);
+	$self->set_header('content-type', $self->_serializer->content_type);
+	my %options = (headers => $self->_headers);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
 	my $res = $self->_ua->request($method, $uri, \%options);
 	# Return an error if status 5XX
@@ -79,6 +97,7 @@ sub _call {
 
 sub get {
 	my ($self, $endpoint, $data, $args) = @_;
+	$self->clear_headers;
 	my $uri = $endpoint;
 	if (my %data = %{ $data || {} }) {
 		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
@@ -88,6 +107,7 @@ sub get {
 
 sub post {
 	my $self = shift;
+	$self->clear_headers;
 	my ($endpoint, $data, $args) = @_;
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
@@ -98,22 +118,28 @@ sub post {
 
 sub put {
 	my $self = shift;
+	$self->clear_headers;
 	return $self->_call('PUT', @_);
 }
 
 sub delete {
 	my $self = shift;
+	$self->clear_headers;
 	return $self->_call('DELETE', @_);
 }
 
 sub options {
 	my $self = shift;
+	$self->clear_headers;
 	return $self->_call('OPTIONS', @_);
 }
 
 1;
+
 __END__
+
 # ABSTRACT: REST Client Role
+
 =pod
 
 =head1 NAME
@@ -122,38 +148,38 @@ Role::REST::Client - REST Client Role
 
 =head1 SYNOPSIS
 
-    {
-        package RESTExample;
+	{
+		package RESTExample;
 
-        use Moose;
-        with 'Role::REST::Client';
+		use Moose;
+		with 'Role::REST::Client';
 
-        sub bar {
-            my ($self) = @_;
-            my $res = $self->post('foo/bar/baz', {foo => 'bar'});
-            my $code = $res->code;
-            my $data = $res->data;
-            return $data if $code == 200;
-       }
+		sub bar {
+			my ($self) = @_;
+			my $res = $self->post('foo/bar/baz', {foo => 'bar'});
+			my $code = $res->code;
+			my $data = $res->data;
+			return $data if $code == 200;
+	   }
 
-    }
+	}
 
-    my $foo = RESTExample->new( 
-        server =>      'http://localhost:3000',
-        type   =>      'application/json',
-        clientattrs => {timeout => 5},
-    );
+	my $foo = RESTExample->new(
+		server =>      'http://localhost:3000',
+		type   =>      'application/json',
+		clientattrs => {timeout => 5},
+	);
 
-    $foo->bar;
+	$foo->bar;
 
-    # controller
-    sub foo : Local {
-        my ($self, $c) = @_;
-        my $res = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
-        my $code = $res->code;
-        my $data = $res->data;
-        ...
-    }
+	# controller
+	sub foo : Local {
+		my ($self, $c) = @_;
+		my $res = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+		my $code = $res->code;
+		my $data = $res->data;
+		...
+	}
 
 =head1 DESCRIPTION
 
