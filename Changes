@@ -1,8 +1,8 @@
 Revision history for Role-REST-Client
 
-{{$NEXT}}
+0.02    2012-03-01 20:58:30 Europe/Copenhagen
  - Turn _ua into an attribute
- - Add support for Auth modules
+ - Add support for Auth modules (See http://search.cpan.org/dist/Role-REST-Client-Auth-Basic/)
 
 0.01    2012-02-20 17:28:59 Europe/Copenhagen
  - First version, with functionality taken from Catalyst::Model::REST
