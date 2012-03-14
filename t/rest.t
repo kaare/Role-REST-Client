@@ -24,6 +24,6 @@ my %testdata = (
 ok(my $obj = RESTExample->new(%testdata), 'New object');
 isa_ok($obj, 'RESTExample');
 
-for my $item (qw/post get put delete _call _headers/) {
+for my $item (qw/post get put delete _call httpheaders/) {
     ok($obj->can($item), "Role method $item exists");
 }

@@ -1,5 +1,9 @@
 Revision history for Role-REST-Client
 
+{{$NEXT}}
+ - Clear headers AFTER the request, Makes it possible to set any http header except content-type
+   and any header set by authentication roles.
+
 0.02    2012-03-01 20:58:30 Europe/Copenhagen
  - Turn _ua into an attribute
  - Add support for Auth modules (See http://search.cpan.org/dist/Role-REST-Client-Auth-Basic/)
