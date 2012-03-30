@@ -48,6 +48,13 @@ has 'httpheaders' => (
 
 no Moose::Util::TypeConstraints;
 
+sub _rest_response_class { 'Role::REST::Client::Response' }
+
+sub _new_rest_response {
+    my ($self, @args) = @_;
+    $self->_rest_response_class->new(@args);
+}
+
 sub _serializer {
 	my ($self, $type) = @_;
 	$type ||= $self->type;
@@ -75,7 +82,7 @@ sub _call {
 	my $res = $self->_ua->request($method, $uri, \%options);
 	$self->clear_headers;
 	# Return an error if status 5XX
-	return Role::REST::Client::Response->new(
+	return $self->_new_rest_response(
 		code => $res->{status},
 		response => $res,
 		error => $res->{reason},
@@ -88,7 +95,7 @@ sub _call {
 	my $content;
 	$content = $deserializer->deserialize($res->{content}) if $deserializer && $res->{content};
 	$content ||= {};
-	return Role::REST::Client::Response->new(
+    return $self->_new_rest_response(
 		code => $res->{status},
 		response => $res,
 		data => $content,
@@ -222,7 +229,7 @@ args - the optional argument parameter can have these entries
 	my $res = $self->post('foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
 
 
-All methods return a L<Role::REST::Client::Response> object.
+All methods return a response object dictated by _rest_response_class. Set to L<Role::REST::Client::Response> by default.
 
 =head1 ATTRIBUTES
 

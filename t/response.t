@@ -6,11 +6,29 @@ eval 'use JSON';
 if ($@) {
 	plan skip_all => 'Install JSON to run this test';
 } else {
-	plan tests => 8
+	plan tests => 10
 };
 
 use_ok( 'Role::REST::Client::Serializer' );
 use_ok( 'Role::REST::Client::Response' );
+
+
+{
+    package MyResponse;
+    use Moose;
+    extends 'Role::REST::Client::Response';
+
+    sub foo { 1  }
+}
+
+{
+    package MyClient;
+    use Moose;
+    use Role::REST::Client;
+    with 'Role::REST::Client';
+
+    sub _rest_response_class { 'MyResponse' }
+}
 
 # test JSON hashes / arrays
 my $jtype = 'application/json';
@@ -29,3 +47,11 @@ ok(Role::REST::Client::Response->new(
     data => $array_data,
 ), 'response accepted an arrayref');
 
+sub Mock::UA::request { shift(@{$_[0]->{responses}}) }
+
+my $client = MyClient->new('server' => 'bar');
+$client->{_ua} = bless({ responses => [ { code => 1, status => 1, data => {} } ] }, 'Mock::UA'); # fuck you purity, I am testing here --mst
+my $response = $client->get('/foo');
+
+isa_ok($response, 'MyResponse', 'proper response class returned');
+ok($response->can('foo'), 'custom response method included');
