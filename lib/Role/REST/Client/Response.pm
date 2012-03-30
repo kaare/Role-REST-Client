@@ -1,6 +1,5 @@
 package Role::REST::Client::Response;
 
-use 5.010;
 use Moose;
 
 has 'code' => (

@@ -1,6 +1,5 @@
 package Role::REST::Client;
 
-use 5.010;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
 use HTTP::Tiny;

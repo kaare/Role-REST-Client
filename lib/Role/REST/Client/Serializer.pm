@@ -1,5 +1,5 @@
 package Role::REST::Client::Serializer;
-use 5.010;
+
 use Try::Tiny;
 use Moose;
 use Moose::Util::TypeConstraints;
