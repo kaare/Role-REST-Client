@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Response and serializer are now easy overridable [Matt Phillips].
 
 0.04    2012-03-30 11:02:47 Europe/Copenhagen
  - Don't use 5.010; we don't have particular needs for that
