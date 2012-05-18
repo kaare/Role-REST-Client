@@ -33,9 +33,21 @@ has _ua => (
 		return $self->{ua};
 	},
 );
-has 'httpheaders' => (
+has 'persistent_headers' => (
 	traits    => ['Hash'],
 	is        => 'ro',
+	isa       => 'HashRef[Str]',
+	default   => sub { {} },
+	handles   => {
+		set_persistent_header     => 'set',
+		get_persistent_header     => 'get',
+		has_no_persistent_headers => 'is_empty',
+		clear_persistent_headers  => 'clear',
+	},
+);
+has 'httpheaders' => (
+	traits    => ['Hash'],
+	is        => 'rw',
 	isa       => 'HashRef[Str]',
 	default   => sub { {} },
 	handles   => {
@@ -87,7 +99,7 @@ sub _call {
 	my %options = (headers => $self->httpheaders);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
 	my $res = $self->_ua->request($method, $uri, \%options);
-	$self->clear_headers;
+	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
 	# Return an error if status 5XX
 	return $self->_new_rest_response(
 		code => $res->{status},
@@ -232,9 +244,9 @@ args - the optional argument parameter can have these entries
 
 	deserializer - if you KNOW that the content-type of the response is incorrect,
 	you can supply the correct content type, like
-
 	my $res = $self->post('foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
 
+	preserve_headers - set this to true if you want to keep the headers between calls
 
 All methods return a response object dictated by _rest_response_class. Set to L<Role::REST::Client::Response> by default.
 
@@ -251,6 +263,16 @@ e.g. 'http://localhost:3000'
 Mime content type,
 
 e.g. application/json
+
+=head2 httpheaders
+
+You can set any http header you like with set_header, e.g.
+$self->set_header($key, $value) but the content-type header will be overridden.
+
+=head2 persistent_headers
+
+A hashref containing headers you want to use for all requests. Set individual headers with
+set_persistent_header, clear the hashref with clear_persistent_header.
 
 =head2 clientattrs
 

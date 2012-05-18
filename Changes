@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Add preserve_headers option and persistent_headers to allow sticky headers.
 
 0.05    2012-04-02 22:57:55 Europe/Copenhagen
  - Response and serializer are now easy overridable [Matt Phillips].
