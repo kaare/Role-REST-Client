@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Make new_serializer and serializer_class public method and attr,
+   respectively (Wallace Reis).
 
 0.06    2012-05-19 18:32:07 Europe/Copenhagen
  - Add preserve_headers option and persistent_headers to allow sticky headers.
