@@ -58,6 +58,11 @@ has 'httpheaders' => (
 	},
 );
 
+has serializer_class => (
+  isa => 'ClassName', is => 'ro',
+  default => 'Role::REST::Client::Serializer',
+);
+
 no Moose::Util::TypeConstraints;
 
 sub _rest_response_class { 'Role::REST::Client::Response' }
@@ -67,11 +72,9 @@ sub _new_rest_response {
     $self->_rest_response_class->new(@args);
 }
 
-sub _serializer_class { 'Role::REST::Client::Serializer' }
-
-sub _new_serializer {
+sub new_serializer {
     my ($self, @args) = @_;
-    $self->_serializer_class->new(@args);
+    $self->serializer_class->new(@args);
 }
 
 sub _serializer {
@@ -79,12 +82,12 @@ sub _serializer {
 	$type ||= $self->type;
 	$type =~ s/;\s*?charset=.+$//i; #remove stuff like ;charset=utf8
 	try {
-		$self->{serializer}{$type} ||= $self->_new_serializer(type => $type);
+		$self->{serializer}{$type} ||= $self->new_serializer(type => $type);
 	}
 	catch {
 		# Deal with real life content types like "text/xml;charset=ISO-8859-1"
 		warn "No serializer available for " . $type . " content. Trying default " . $self->type;
-		$self->{serializer}{$type} = $self->_new_serializer(type => $self->type);
+		$self->{serializer}{$type} = $self->new_serializer(type => $self->type);
 	};
 	return $self->{serializer}{$type};
 }
