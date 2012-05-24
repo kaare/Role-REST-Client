@@ -6,7 +6,7 @@ eval 'use JSON';
 if ($@) {
 	plan skip_all => 'Install JSON to run this test';
 } else {
-	plan tests => 10
+	plan tests => 12
 };
 
 use_ok( 'Role::REST::Client::Serializer' );
@@ -39,13 +39,19 @@ ok (my $serializer = Role::REST::Client::Serializer->new(type => $jtype), "New $
 is($serializer->content_type, $jtype, 'Content Type');
 ok(my $sdata = $serializer->serialize($array_data), 'Serialize');
 is($sdata, $json_array, 'Serialize data');
-is_deeply($serializer->deserialize($sdata), $array_data, 'Deserialize');
 
-ok(Role::REST::Client::Response->new(
+ok(my $res = Role::REST::Client::Response->new(
     code => 200,
     response => {},
-    data => $array_data,
-), 'response accepted an arrayref');
+    data => sub { $serializer->deserialize($sdata) },
+), 'response accepted');
+is_deeply($res->data, $array_data, 'Deserialize');
+ok($res = Role::REST::Client::Response->new(
+    code => 500,
+    response => {},
+    error => 'Internal Server Error',
+), 'error response accepted');
+is_deeply($res->data, {}, 'empty hashref if the response was unsuccessful');
 
 sub Mock::UA::request { shift(@{$_[0]->{responses}}) }
 

@@ -14,9 +14,12 @@ has 'error' => (
     isa => 'Str',
     is  => 'ro',
 );
-has 'data' => (
-    isa => 'HashRef | ArrayRef',
-    is  => 'ro',
+has 'data_callback' => (
+    init_arg => 'data',
+    traits  => ['Code'],
+    isa => 'CodeRef', is  => 'ro',
+    default => sub { sub { {} } },
+    handles => { data => 'execute' },
 );
 
 __PACKAGE__->meta->make_immutable;
