@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.07    2012-05-24 07:22:16 Europe/Copenhagen
  - Make new_serializer and serializer_class public method and attr,
    respectively (Wallace Reis).
 
