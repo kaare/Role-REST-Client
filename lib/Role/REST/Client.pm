@@ -110,17 +110,21 @@ sub _call {
 		error => $res->{reason},
 	) if $res->{status} > 499;
 
-	# Try to find a serializer for the result content
-	my $content_type = $args->{deserializer} || $res->{headers}{content_type} || $res->{headers}{'content-type'};
-	my $deserializer = $self->_serializer($content_type);
-	# Try to deserialize
-	my $content;
-	$content = $deserializer->deserialize($res->{content}) if $deserializer && $res->{content};
-	$content ||= {};
-    return $self->_new_rest_response(
+        my $deserializer_cb = sub {
+	        # Try to find a serializer for the result content
+	        my $content_type = $args->{deserializer} || $res->{headers}{content_type}
+                        || $res->{headers}{'content-type'};
+	        my $deserializer = $self->_serializer($content_type);
+	        # Try to deserialize
+	        my $content;
+	        $content = $deserializer->deserialize($res->{content})
+                        if $deserializer && $res->{content};
+	        $content ||= {};
+        };
+        return $self->_new_rest_response(
 		code => $res->{status},
 		response => $res,
-		data => $content,
+		data => $deserializer_cb,
 	);
 }
 
