@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use HTTP::Response;
 
 eval 'use JSON';
 if ($@) {
@@ -42,13 +43,13 @@ is($sdata, $json_array, 'Serialize data');
 
 ok(my $res = Role::REST::Client::Response->new(
     code => 200,
-    response => {},
+    response => HTTP::Response->new,
     data => sub { $serializer->deserialize($sdata) },
 ), 'response accepted');
 is_deeply($res->data, $array_data, 'Deserialize');
 ok($res = Role::REST::Client::Response->new(
     code => 500,
-    response => {},
+    response => HTTP::Response->new,
     error => 'Internal Server Error',
 ), 'error response accepted');
 is_deeply($res->data, {}, 'empty hashref if the response was unsuccessful');
@@ -56,7 +57,6 @@ is_deeply($res->data, {}, 'empty hashref if the response was unsuccessful');
 sub Mock::UA::request { shift(@{$_[0]->{responses}}) }
 
 my $client = MyClient->new('server' => 'bar');
-$client->{_ua} = bless({ responses => [ { code => 1, status => 1, data => {} } ] }, 'Mock::UA'); # fuck you purity, I am testing here --mst
 my $response = $client->get('/foo');
 
 isa_ok($response, 'MyResponse', 'proper response class returned');
