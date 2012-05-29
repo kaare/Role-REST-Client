@@ -7,7 +7,7 @@ has 'code' => (
     is  => 'ro',
 );
 has 'response' => (
-    isa => 'HashRef',
+    isa => 'HTTP::Response',
     is  => 'ro',
 );
 has 'error' => (
@@ -38,7 +38,7 @@ Returns the http status code of the request
 
 =head2 response
 
-Returns the raw HTTP::Tiny response. Use this if you need more information than status and content.
+Returns the a HTTP::Response object. Use this if you need more information than status and content.
 
 =head2 error
 
