@@ -1,8 +1,12 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
- - Lazily deserialize the response (Wallace Reis).
 
+0.08    2012-05-29 07:24:24 Europe/Copenhagen
+ - Lazily deserialize the response (Wallace Reis).
+ - Allow use of a custom UA object (Wallace Reis).
+ - Defer the building of serializer obj until really necessary (Wallace Reis).
+ 
 0.07    2012-05-24 07:22:16 Europe/Copenhagen
  - Make new_serializer and serializer_class public method and attr,
    respectively (Wallace Reis).
