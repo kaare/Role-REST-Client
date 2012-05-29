@@ -127,6 +127,9 @@ sub _call {
 	$self->set_header('content-type', $self->type);
 	my %options = (headers => $self->httpheaders);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
+        if ( defined(my $clength = $args->{'req-content-length'}) ) {
+                $options{headers}{'content-length'} = $clength;
+        }
 	my $res = $self->_handle_response( $self->user_agent->request($method, $uri, \%options) );
 	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
 	# Return an error if status 5XX
@@ -158,6 +161,8 @@ sub post {
 	my ($endpoint, $data, $args) = @_;
 	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
 		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+                $args ||= {};
+                $args->{'req-content-length'} = length $content;
 		return $self->_call('POST', $endpoint, $content, $args);
 	}
 	return $self->_call('POST', @_);
