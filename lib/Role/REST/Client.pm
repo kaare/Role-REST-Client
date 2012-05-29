@@ -9,6 +9,9 @@ use Try::Tiny;
 use Carp qw(confess);
 use Role::REST::Client::Serializer;
 use Role::REST::Client::Response;
+use HTTP::Response;
+use HTTP::Status 'status_message';
+use HTTP::Headers;
 
 with 'MooseX::Traits';
 
@@ -23,16 +26,18 @@ has 'type' => (
 );
 has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
 
-has _ua => (
-	isa => 'HTTP::Tiny',
+has user_agent => (
+        isa => duck_type([qw(request)]),
 	is => 'ro',
 	lazy => 1,
-	default => sub {
-		my ($self) = @_;
-		$self->{ua} ||= HTTP::Tiny->new(%{$self->clientattrs});
-		return $self->{ua};
-	},
+        builder => '_build_user_agent',
 );
+
+sub _build_user_agent {
+        my $self = shift;
+        return HTTP::Tiny->new(%{$self->clientattrs});
+}
+
 has 'persistent_headers' => (
 	traits    => ['Hash'],
 	is        => 'ro',
@@ -59,22 +64,43 @@ has 'httpheaders' => (
 );
 
 has serializer_class => (
-  isa => 'ClassName', is => 'ro',
-  default => 'Role::REST::Client::Serializer',
+        isa => 'ClassName', is => 'ro',
+        default => 'Role::REST::Client::Serializer',
 );
 
 no Moose::Util::TypeConstraints;
 
 sub _rest_response_class { 'Role::REST::Client::Response' }
 
+sub _handle_response {
+          my ( $self, $res ) = @_;
+          if ( ref $res eq 'HASH' ) {
+                  my $code = $res->{'status'};
+                  return HTTP::Response->new(
+                          $code,
+                          $res->{'reason'} || status_message($code),
+                          HTTP::Headers->new(%{$res->{'headers'}}),
+                          $res->{'content'},
+                  );
+          } else {
+                  return $res;
+          }
+}
+
 sub _new_rest_response {
-    my ($self, @args) = @_;
-    $self->_rest_response_class->new(@args);
+        my ($self, $res, $deserializer_cb) = @_;
+        my %args = (
+                code => $res->code,
+                response => $res,
+                error => $res->message,
+                data => $deserializer_cb || sub {},
+        );
+        return $self->_rest_response_class->new(%args);
 }
 
 sub new_serializer {
-    my ($self, @args) = @_;
-    $self->serializer_class->new(@args);
+        my ($self, @args) = @_;
+        $self->serializer_class->new(@args);
 }
 
 sub _serializer {
@@ -98,34 +124,24 @@ sub _call {
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
 	# Otherwise, encode data
-	$self->set_header('content-type', $self->_serializer->content_type);
+	$self->set_header('content-type', $self->type);
 	my %options = (headers => $self->httpheaders);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
-	my $res = $self->_ua->request($method, $uri, \%options);
+	my $res = $self->_handle_response( $self->user_agent->request($method, $uri, \%options) );
 	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
 	# Return an error if status 5XX
-	return $self->_new_rest_response(
-		code => $res->{status},
-		response => $res,
-		error => $res->{reason},
-	) if $res->{status} > 499;
+	return $self->_new_rest_response($res) if $res->code > 499;
 
         my $deserializer_cb = sub {
 	        # Try to find a serializer for the result content
-	        my $content_type = $args->{deserializer} || $res->{headers}{content_type}
-                        || $res->{headers}{'content-type'};
+                my $content_type = $args->{deserializer} || $res->header('Content-Type');
 	        my $deserializer = $self->_serializer($content_type);
 	        # Try to deserialize
-	        my $content;
-	        $content = $deserializer->deserialize($res->{content})
-                        if $deserializer && $res->{content};
+	        my $content = $res->decoded_content;
+	        $content = $deserializer->deserialize($content) if $deserializer && $content;
 	        $content ||= {};
         };
-        return $self->_new_rest_response(
-		code => $res->{status},
-		response => $res,
-		data => $deserializer_cb,
-	);
+        return $self->_new_rest_response($res, $deserializer_cb);
 }
 
 sub get {
@@ -259,6 +275,10 @@ All methods return a response object dictated by _rest_response_class. Set to L<
 
 =head1 ATTRIBUTES
 
+=head2 user_agent
+
+An UA object which can do C<< ->request >> method, for instance: L<HTTP::Tiny>, L<LWP::UserAgent>, etc.
+
 =head2 server
 
 Url of the REST server.
@@ -283,7 +303,7 @@ set_persistent_header, clear the hashref with clear_persistent_header.
 
 =head2 clientattrs
 
-Attributes to feed HTTP::Tiny
+Attributes to feed the user agent object (which defaults to L<HTTP::Tiny>)
 
 e.g. {timeout => 10}
 
@@ -291,12 +311,12 @@ e.g. {timeout => 10}
 
 Kaare Rasmussen, <kaare at cpan dot com>
 
-=head1 BUGS 
+=head1 BUGS
 
 Please report any bugs or feature requests to bug-role-rest-client at rt.cpan.org, or through the
 web interface at http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Role-REST-Client.
 
-=head1 COPYRIGHT & LICENSE 
+=head1 COPYRIGHT & LICENSE
 
 Copyright 2012 Kaare Rasmussen, all rights reserved.
 
