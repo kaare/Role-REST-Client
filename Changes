@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Use Data::Serializer::Raw instead of Data::Serializer
 
 0.08    2012-05-29 07:24:24 Europe/Copenhagen
  - Lazily deserialize the response (Wallace Reis).
