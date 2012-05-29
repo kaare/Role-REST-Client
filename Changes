@@ -1,7 +1,11 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.09    2012-05-29 14:59:38 Europe/Copenhagen
  - Use Data::Serializer::Raw instead of Data::Serializer
+ - Fix content-length missmatch issue (Wallace Reis).
+ - Factor out request step (Wallace Reis).
 
 0.08    2012-05-29 07:24:24 Europe/Copenhagen
  - Lazily deserialize the response (Wallace Reis).
