@@ -161,6 +161,8 @@ sub get {
 	return $self->_call('GET', $uri, undef, $args);
 }
 
+sub head { return shift->_call('HEAD', @_) }
+
 sub post {
 	my $self = shift;
 	my ($endpoint, $data, $args) = @_;
@@ -245,6 +247,8 @@ Role::REST::Client will handle encoding and decoding when using the four HTTP ve
 	PUT
 	POST
 	DELETE
+        OPTIONS
+        HEAD
 
 Currently Role::REST::Client supports these encodings
 
@@ -263,8 +267,10 @@ Role::REST::Client implements the standard HTTP 1.1 verbs as methods
 
 	post
 	get
+        head
 	put
 	delete
+        options
 
 All methods take these parameters
 
