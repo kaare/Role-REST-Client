@@ -118,6 +118,11 @@ sub _serializer {
 	return $self->{serializer}{$type};
 }
 
+sub do_request {
+        my ($self, $method, $uri, $opts) = @_;
+        return $self->user_agent->request($method, $uri, $opts);
+}
+
 sub _call {
 	my ($self, $method, $endpoint, $data, $args) = @_;
 	my $uri = $self->server.$endpoint;
@@ -127,7 +132,7 @@ sub _call {
 	$self->set_header('content-type', $self->type);
 	my %options = (headers => $self->httpheaders);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
-	my $res = $self->_handle_response( $self->user_agent->request($method, $uri, \%options) );
+	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
 	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
 	# Return an error if status 5XX
 	return $self->_new_rest_response($res) if $res->code > 499;
