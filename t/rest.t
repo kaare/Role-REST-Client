@@ -17,7 +17,11 @@ use HTTP::Headers;
 
 my $ua_class = class {
   use JSON;
+  use Test::More;
   sub request {
+    my $opts = pop;
+    ok(!ref($opts->{'content'}), 'content key must be a scalar value due content-type');
+    is($opts->{'content'}, 'foo=bar', 'no serialization should happen');
     my $json = encode_json({ error => 'Resource not found' });
     my $headers = HTTP::Headers->new('Content-Type' => 'application/json');
     return HTTP::Response->new(404, 'Not Found', $headers, $json);
@@ -36,8 +40,9 @@ for my $item (qw/post get put delete _call httpheaders/) {
     ok($obj->can($item), "Role method $item exists");
 }
 
-ok(my $res = $obj->bar);
+ok(my $res = $obj->bar, 'got a response object');
 isa_ok($res, 'Role::REST::Client::Response');
 isa_ok($res->response, 'HTTP::Response');
+is($res->data->{'error'}, 'Resource not found', 'deserialization works');
 
 done_testing;

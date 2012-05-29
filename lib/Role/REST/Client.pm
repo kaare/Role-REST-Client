@@ -124,7 +124,7 @@ sub _call {
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
 	# Otherwise, encode data
-	$self->set_header('content-type', $self->_serializer->content_type);
+	$self->set_header('content-type', $self->type);
 	my %options = (headers => $self->httpheaders);
 	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
 	my $res = $self->_handle_response( $self->user_agent->request($method, $uri, \%options) );
