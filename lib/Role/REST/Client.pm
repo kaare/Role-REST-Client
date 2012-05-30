@@ -131,9 +131,9 @@ sub _call {
 	# Otherwise, encode data
 	$self->set_header('content-type', $self->type);
 	my %options = (headers => $self->httpheaders);
-	$options{content} = ref $data ? $self->_serializer->serialize($data) : $data if defined $data;
-        if ( defined(my $clength = $args->{'req-content-length'}) ) {
-                $options{headers}{'content-length'} = $clength;
+        if ( defined $data ) {
+	        $options{content} = ref $data ? $self->_serializer->serialize($data) : $data;
+                $options{'headers'}{'content-length'} = length($options{'content'});
         }
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
 	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
@@ -152,43 +152,45 @@ sub _call {
         return $self->_new_rest_response($res, $deserializer_cb);
 }
 
-sub get {
-	my ($self, $endpoint, $data, $args) = @_;
+sub _urlencode_data {
+        my ($self, $data) = @_;
+        return join '&', map { uri_escape($_) . '=' . uri_escape($data->{$_})} keys %$data;
+}
+
+sub _request_with_query {
+	my ($self, $method, $endpoint, $data, $args) = @_;
 	my $uri = $endpoint;
-	if (my %data = %{ $data || {} }) {
-		$uri .= '?' . join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
+	if ($data && scalar keys %$data) {
+		$uri .= '?' . $self->_urlencode_data($data);
 	}
-	return $self->_call('GET', $uri, undef, $args);
+	return $self->_call($method, $uri, undef, $args);
 }
 
-sub head { return shift->_call('HEAD', @_) }
+sub get { return shift->_request_with_query('GET', @_) }
 
-sub post {
-	my $self = shift;
-	my ($endpoint, $data, $args) = @_;
-	if ($self->type =~ /urlencoded/ and my %data = %{ $data }) {
-		my $content = join '&', map { uri_escape($_) . '=' . uri_escape($data{$_})} keys %data;
-                $args ||= {};
-                $args->{'req-content-length'} = length $content;
-		return $self->_call('POST', $endpoint, $content, $args);
-	}
-	return $self->_call('POST', @_);
+sub head { return shift->_request_with_query('HEAD', @_) }
+
+sub delete { return shift->_request_with_query('DELETE', @_) }
+
+sub _request_with_body {
+	my ($self, $method, $endpoint, $data, $args) = @_;
+        my $content = $data;
+        if ( $self->type =~ /urlencoded/ ) {
+                if ( $data && scalar keys %$data ) {
+                    $content = $self->_urlencode_data($data);
+                }
+                else {
+                    $content = q{};
+                }
+        }
+	return $self->_call($method, $endpoint, $content, $args);
 }
 
-sub put {
-	my $self = shift;
-	return $self->_call('PUT', @_);
-}
+sub post { return shift->_request_with_body('POST', @_) }
 
-sub delete {
-	my $self = shift;
-	return $self->_call('DELETE', @_);
-}
+sub put { return shift->_request_with_body('PUT', @_) }
 
-sub options {
-	my $self = shift;
-	return $self->_call('OPTIONS', @_);
-}
+sub options { return shift->_request_with_body('OPTIONS', @_) }
 
 1;
 
