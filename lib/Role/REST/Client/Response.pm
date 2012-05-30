@@ -13,6 +13,7 @@ has 'response' => (
 has 'error' => (
 	isa => 'Str',
 	is  => 'ro',
+	predicate => 'failed',
 );
 has 'data_callback' => (
 	init_arg => 'data',
@@ -45,6 +46,10 @@ Returns the a HTTP::Response object. Use this if you need more information than 
 =head2 error
 
 Returns the returned reason from HTTP::Tiny where the status is 500 or higher. 
+
+=head2 failed
+
+True if the request didn't succeed.
 
 =head2 data
 
