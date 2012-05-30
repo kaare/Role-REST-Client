@@ -3,29 +3,31 @@ package Role::REST::Client::Response;
 use Moose;
 
 has 'code' => (
-    isa => 'Int',
-    is  => 'ro',
+	isa => 'Int',
+	is  => 'ro',
 );
 has 'response' => (
-    isa => 'HTTP::Response',
-    is  => 'ro',
+	isa => 'HTTP::Response',
+	is  => 'ro',
 );
 has 'error' => (
-    isa => 'Str',
-    is  => 'ro',
+	isa => 'Str',
+	is  => 'ro',
 );
 has 'data_callback' => (
-    init_arg => 'data',
-    traits  => ['Code'],
-    isa => 'CodeRef', is  => 'ro',
-    default => sub { sub { {} } },
-    handles => { data => 'execute' },
+	init_arg => 'data',
+	traits  => ['Code'],
+	isa => 'CodeRef', is  => 'ro',
+	default => sub { sub { {} } },
+	handles => { data => 'execute' },
 );
 
 __PACKAGE__->meta->make_immutable;
 
 1;
+
 __END__
+
 =head1 NAME
 
 Role::REST::Client::Response - Response class for REST
