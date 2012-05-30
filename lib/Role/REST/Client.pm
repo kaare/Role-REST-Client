@@ -88,14 +88,8 @@ sub _handle_response {
 }
 
 sub _new_rest_response {
-	my ($self, $res, $deserializer_cb) = @_;
-	my %args = (
-		code => $res->code,
-		response => $res,
-		error => $res->message,
-		data => $deserializer_cb || sub {},
-	);
-	return $self->_rest_response_class->new(%args);
+	my ($self, @args) = @_;
+	return $self->_rest_response_class->new(@args);
 }
 
 sub new_serializer {
@@ -138,7 +132,11 @@ sub _call {
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
 	$self->httpheaders($self->persistent_headers) unless $args->{preserve_headers};
 	# Return an error if status 5XX
-	return $self->_new_rest_response($res) if $res->code > 499;
+	return $self->_new_rest_response(
+		code => $res->code,
+		response => $res,
+		error => $res->message,
+        ) if $res->code > 499;
 
 	my $deserializer_cb = sub {
 		# Try to find a serializer for the result content
@@ -149,7 +147,11 @@ sub _call {
 		$content = $deserializer->deserialize($content) if $deserializer && $content;
 		$content ||= {};
 	};
-	return $self->_new_rest_response($res, $deserializer_cb);
+	return $self->_new_rest_response(
+		code => $res->code,
+		response => $res,
+		data => $deserializer_cb,
+        );
 }
 
 sub _urlencode_data {

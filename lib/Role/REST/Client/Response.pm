@@ -13,6 +13,7 @@ has 'response' => (
 has 'error' => (
 	isa => 'Str',
 	is  => 'ro',
+        predicate => 'failed',
 );
 has 'data_callback' => (
 	init_arg => 'data',
