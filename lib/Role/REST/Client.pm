@@ -176,12 +176,7 @@ sub _request_with_body {
 	my ($self, $method, $endpoint, $data, $args) = @_;
         my $content = $data;
         if ( $self->type =~ /urlencoded/ ) {
-                if ( $data && scalar keys %$data ) {
-                    $content = $self->_urlencode_data($data);
-                }
-                else {
-                    $content = q{};
-                }
+                $content = ( $data && scalar keys %$data ) ? $self->_urlencode_data($data) : q{};
         }
 	return $self->_call($method, $endpoint, $content, $args);
 }

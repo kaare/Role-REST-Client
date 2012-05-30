@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Add HTTP HEAD method (Wallace Reis).
 
 0.09    2012-05-29 14:59:38 Europe/Copenhagen
  - Use Data::Serializer::Raw instead of Data::Serializer
