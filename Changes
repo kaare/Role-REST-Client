@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.10    2012-06-01 14:07:37 Europe/Copenhagen
  - Add HTTP HEAD method (Wallace Reis).
 
 0.09    2012-05-29 14:59:38 Europe/Copenhagen
