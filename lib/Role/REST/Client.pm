@@ -140,7 +140,7 @@ sub _call {
 		$options{'headers'}{'content-length'} = length($options{'content'});
 	}
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
-	$self->_set_httpheaders($self->persistent_headers) unless $args->{preserve_headers};
+	$self->reset_headers unless $args->{preserve_headers};
 	# Return an error if status 5XX
 	return $self->_new_rest_response(
 		code => $res->code,
