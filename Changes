@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.11    2012-06-14 20:47:25 Europe/Copenhagen
  - Init methods remember the persistent headers (Thanks to Wallace Reis for the tests).
 
 0.10    2012-06-01 14:07:37 Europe/Copenhagen
