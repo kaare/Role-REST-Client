@@ -54,6 +54,7 @@ has 'httpheaders' => (
 	traits      => ['Hash'],
 	is          => 'ro',
 	isa         => 'HashRef[Str]',
+        lazy        => 1,
 	writer      => '_set_httpheaders',
 	builder     => '_build_httpheaders',
 	initializer => '_build_httpheaders',
