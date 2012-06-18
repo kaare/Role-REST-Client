@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ -  Fix httpheaders attr - must be lazy since builder depends on persistent_headers (Wallace Reis).
 
 0.11    2012-06-14 20:47:25 Europe/Copenhagen
  - Init methods remember the persistent headers (Thanks to Wallace Reis for the tests).
