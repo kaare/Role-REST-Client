@@ -1,6 +1,5 @@
 use Test::More;
 use Test::Deep;
-use MooseX::Declare;
 use HTTP::Response;
 use HTTP::Headers;
 
@@ -15,10 +14,12 @@ use HTTP::Headers;
 		return $self->post('foo/bar/baz', {foo => 'bar'});
         }
 }
-
-my $ua_class = class {
+{
+  package UAClass;
+  use Moose;
   use JSON;
   use Test::More;
+  has 'timeout' => ( is => 'ro', isa => 'Int' );
   sub request {
     my $opts = pop;
     ok(!ref($opts->{'content'}), 'content key must be a scalar value due content-type');
@@ -27,8 +28,8 @@ my $ua_class = class {
     my $headers = HTTP::Headers->new('Content-Type' => 'application/json');
     return HTTP::Response->new(404, 'Not Found', $headers, $json);
   }
-};
-my $ua = $ua_class->name->new(timeout => 5);
+}
+my $ua = UAClass->new(timeout => 5);
 my $persistent_headers = { 'Accept' => 'application/json' };
 my %testdata = (
 	server => 'http://localhost:3000',
