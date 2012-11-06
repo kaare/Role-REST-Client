@@ -2,7 +2,6 @@ package Role::REST::Client;
 
 use Moose::Role;
 use Moose::Util::TypeConstraints;
-use HTTP::Tiny;
 use URI::Escape;
 use Try::Tiny;
 
@@ -35,6 +34,7 @@ has user_agent => (
 
 sub _build_user_agent {
 	my $self = shift;
+	require HTTP::Tiny;
 	return HTTP::Tiny->new(%{$self->clientattrs});
 }
 
