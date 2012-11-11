@@ -79,7 +79,7 @@ sub _build_httpheaders {
 	$self->_set_httpheaders( { %{$self->persistent_headers}, %$headers });
 }
 
-sub reset_headers {my $self = shift;$self->_set_httpheaders($self->persistent_headers)}
+sub reset_headers {my $self = shift;$self->_set_httpheaders({ %{$self->persistent_headers} })}
 
 sub _rest_response_class { 'Role::REST::Client::Response' }
 
