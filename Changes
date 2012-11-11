@@ -1,6 +1,10 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ -  Change json/yaml/xml serializers to recommends instead of requires (Matt Phillips)
+ -  Fix httpheaders attr - must be lazy since builder depends on persistent_headers (Wallace Reis).
+ -  Remove MooseX::Declare from the dependency chain (Mark Stosberg)
+ -  Don't require HTTP::Tiny to be loaded if it is never used (Mark Stosberg)
 
 0.12    2012-06-26 19:08:09 Europe/Copenhagen
  -  Fix httpheaders attr - must be lazy since builder depends on persistent_headers (Wallace Reis).
