@@ -14,6 +14,11 @@ use HTTP::Headers;
 		my ($self) = @_;
 		return $self->post('foo/bar/baz', {foo => 'bar'});
         }
+
+        sub baz {
+		my ($self) = @_;
+		return $self->post('foo/bar/baz', {foo => 'bar', bar => 'baz' });
+        }
 }
 
 my $ua_class = class {
@@ -22,7 +27,7 @@ my $ua_class = class {
   sub request {
     my $opts = pop;
     ok(!ref($opts->{'content'}), 'content key must be a scalar value due content-type');
-    is($opts->{'content'}, 'foo=bar', 'no serialization should happen');
+    like($opts->{'content'}, qr{foo\=bar}, 'no serialization should happen');
     my $json = encode_json({ error => 'Resource not found' });
     my $headers = HTTP::Headers->new('Content-Type' => 'application/json');
     return HTTP::Response->new(404, 'Not Found', $headers, $json);
@@ -61,6 +66,12 @@ is_deeply($obj->httpheaders, {
 $obj->reset_headers; # which would be like ->httpheaders($persistent_headers);
 is_deeply($obj->httpheaders, $persistent_headers,
   'should have at least persistent_headers');
+
+ok(!exists($obj->persistent_headers->{'X-Foo'}));
+ok($res = $obj->bar, 'got a response obj');
+ok(!exists($obj->persistent_headers->{'content-length'}));
+ok($res = $obj->baz, 'got a response obj');
+ok(!exists($obj->persistent_headers->{'content-length'}));
 
 $obj->clear_headers;
 is_deeply($obj->httpheaders, {}, 'new fresh httpheaders without persistent ones');
