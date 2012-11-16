@@ -83,6 +83,9 @@ sub reset_headers {my $self = shift;$self->_set_httpheaders({ %{$self->persisten
 
 sub _rest_response_class { 'Role::REST::Client::Response' }
 
+# If the response is a hashref, we expect it to be in the format returned by
+# HTTP::Tiny->request() and convert it to an HTTP::Response object.  Otherwise,
+# pass the response through unmodified.
 sub _handle_response {
 	my ( $self, $res ) = @_;
 	if ( ref $res eq 'HASH' ) {
@@ -303,29 +306,48 @@ All methods return a response object dictated by _rest_response_class. Set to L<
 
 =head2 user_agent
 
-An UA object which can do C<< ->request >> method, for instance: L<HTTP::Tiny>, L<LWP::UserAgent>, etc.
+  sub _build_user_agent { HTTP::Tiny->new }
+
+A User Agent object which has a C<< ->request >> method suitably compatible with L<HTTP::Tiny>. It should accept arguments like this: C<< $ua->request($method, $uri, $opts) >>, and needs to return a hashref as HTTP::Tiny does, or an L<HTTP::Response> object.  To set your own default, use a C<_build_user_agent> method.
 
 =head2 server
 
-Url of the REST server.
+URL of the REST server.
 
 e.g. 'http://localhost:3000'
 
 =head2 type
 
-Mime content type,
+MIME Content-Type header,
 
 e.g. application/json
 
 =head2 httpheaders
+
+  $self->set_header('Header' => 'foo', ... );
+  $self->get_header('Header-Name');
+  $self->has_no_headers;
+  $self->clear_headers;
 
 You can set any http header you like with set_header, e.g.
 $self->set_header($key, $value) but the content-type header will be overridden.
 
 =head2 persistent_headers
 
-A hashref containing headers you want to use for all requests. Set individual headers with
-set_persistent_header, clear the hashref with clear_persistent_header.
+  $self->set_persistent_header('Header' => 'foo', ... );
+  $self->get_persistent_header('Header-Name');
+  $self->has_no_persistent_headers;
+  $self->clear_persistent_headers;
+
+A hashref containing headers you want to use for all requests. Use the methods
+described above to manipulate it.
+
+To set your own defaults, override the default or call C<set_persistent_header()> in your
+C<BUILD> method.
+
+  has '+persistent_headers' => (
+    default => sub { ... },
+  );
 
 =head2 clientattrs
 

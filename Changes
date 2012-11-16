@@ -2,6 +2,8 @@ Revision history for Role-REST-Client
 
 {{$NEXT}}
 
+ - Improved Docs (Mark Stosberg) 
+
 0.13    2012-11-11 12:45:40 Europe/Copenhagen
  -  Change json/yaml/xml serializers to recommends instead of requires (Matt Phillips)
  -  Fix httpheaders attr - must be lazy since builder depends on persistent_headers (Wallace Reis).
