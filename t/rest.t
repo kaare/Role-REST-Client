@@ -2,6 +2,8 @@ use Test::More;
 use Test::Deep;
 use HTTP::Response;
 use HTTP::Headers;
+use HTTP::Request;
+use utf8;
 
 {
 	package RESTExample;
@@ -26,12 +28,17 @@ use HTTP::Headers;
   use Test::More;
   has 'timeout' => ( is => 'ro', isa => 'Int' );
   sub request {
-    my $opts = pop;
+    my ( $self, $method, $uri, $opts ) = @_;
     ok(!ref($opts->{'content'}), 'content key must be a scalar value due content-type');
-    like($opts->{'content'}, qr{foo\=bar}, 'no serialization should happen');
+    if ( lc $method eq 'post' ) {
+      like($opts->{'content'}, qr{foo\=bar}, 'no serialization should happen');
+    }
+    my $req = HTTP::Request->new($method => $uri);
     my $json = encode_json({ error => 'Resource not found' });
     my $headers = HTTP::Headers->new('Content-Type' => 'application/json');
-    return HTTP::Response->new(404, 'Not Found', $headers, $json);
+    my $res = HTTP::Response->new(404, 'Not Found', $headers, $json);
+    $res->request($req);
+    return $res;
   }
 }
 my $ua = UAClass->new(timeout => 5);
@@ -85,5 +92,8 @@ is_deeply($obj->httpheaders, {
 ok($res = $obj->bar, 'got a response object');
 is_deeply($obj->httpheaders, $persistent_headers,
   'after first request, it contains persistent ones');
+
+ok($res = $obj->get('/getendpoint', { param => 'büz' }));
+like($res->response->request->uri, qr{param=b%C3%BCz});
 
 done_testing;
