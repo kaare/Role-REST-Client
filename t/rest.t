@@ -84,10 +84,11 @@ ok(!exists($obj->persistent_headers->{'content-length'}));
 $obj->clear_headers;
 is_deeply($obj->httpheaders, {}, 'new fresh httpheaders without persistent ones');
 
-ok($obj = RESTExample->new({ %testdata, httpheaders => { 'X-Foo' => 'foo' } }));
+my $newheaders = { 'X-Foo' => 'foo', 'Accept' => 'application/yaml' };
+ok($obj = RESTExample->new({ %testdata, httpheaders => $newheaders }));
 is_deeply($obj->httpheaders, {
   %$persistent_headers,
-  'X-Foo', 'foo',
+  %$newheaders,
 }, 'merge httpheaders with persistent_headers');
 ok($res = $obj->bar, 'got a response object');
 is_deeply($obj->httpheaders, $persistent_headers,
