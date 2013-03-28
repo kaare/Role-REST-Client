@@ -38,12 +38,19 @@ sub _build_user_agent {
 	return HTTP::Tiny->new(%{$self->clientattrs});
 }
 
-has 'persistent_headers' => (
+has persistent_headers => (
 	traits    => ['Hash'],
 	is        => 'ro',
 	isa       => 'HashRef[Str]',
 	default   => sub { {} },
-        lazy        => 1,
+        lazy      => 1,
+	trigger	  => sub {
+		my ( $self, $header, $old_header ) = @_;
+		# Update httpheaders if their value was initialized first
+		while (my ($key, $value) = each %$header) {
+			$self->set_header($key, $value);
+		}
+	},
 	handles   => {
 		set_persistent_header     => 'set',
 		get_persistent_header     => 'get',
@@ -51,7 +58,7 @@ has 'persistent_headers' => (
 		clear_persistent_headers  => 'clear',
 	},
 );
-has 'httpheaders' => (
+has httpheaders => (
 	traits      => ['Hash'],
 	is          => 'ro',
 	isa         => 'HashRef[Str]',
