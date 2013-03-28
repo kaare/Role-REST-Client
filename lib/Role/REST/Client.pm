@@ -2,7 +2,7 @@ package Role::REST::Client;
 
 use Moose::Role;
 use Moose::Util::TypeConstraints;
-use URI::Escape;
+use URI::Escape::XS 'uri_escape';
 use Try::Tiny;
 
 use Carp qw(confess);
