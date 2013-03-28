@@ -2,6 +2,9 @@ Revision history for Role-REST-Client
 
 {{$NEXT}}
 
+ - Fix URI encode process (Wallace Reis)
+ - self->_persistent_headers was sometimes undef and there was no lazy bit.
+ - dist.ini corrections
  - Improved Docs (Mark Stosberg) 
 
 0.13    2012-11-11 12:45:40 Europe/Copenhagen
