@@ -43,6 +43,7 @@ has 'persistent_headers' => (
 	is        => 'ro',
 	isa       => 'HashRef[Str]',
 	default   => sub { {} },
+        lazy        => 1,
 	handles   => {
 		set_persistent_header     => 'set',
 		get_persistent_header     => 'get',
