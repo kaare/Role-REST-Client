@@ -1,25 +1,22 @@
 package Role::REST::Client::Serializer;
 
 use Try::Tiny;
-use Moose;
-use Moose::Util::TypeConstraints;
-
+use Moo;
+use MooX::Types::MooseLike::Base qw/:all/;
 use Data::Serializer::Raw;
 
 has 'type' => (
-    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
-    is  => 'rw',
-	default => 'application/json',
+	isa => Enum[qw{application/json application/xml application/yaml application/x-www-form-urlencoded}],
+	is  => 'rw',
+	default => sub { 'application/json' },
 );
-no Moose::Util::TypeConstraints;
+
 has 'serializer' => (
-	isa => 'Data::Serializer::Raw',
+	isa => InstanceOf['Data::Serializer::Raw'],
 	is => 'ro',
 	default => \&_set_serializer,
 	lazy => 1,
 );
-
-no Moose;
 
 our %modules = (
 	'application/json' => {

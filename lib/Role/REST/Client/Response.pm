@@ -1,29 +1,30 @@
 package Role::REST::Client::Response;
 
-use Moose;
+use Moo;
+use MooX::HandlesVia;
+use MooX::Types::MooseLike::Base qw/:all/;
 
 has 'code' => (
-	isa => 'Int',
+	isa => Int,
 	is  => 'ro',
 );
 has 'response' => (
-	isa => 'HTTP::Response',
+	isa => InstanceOf['HTTP::Response'],
 	is  => 'ro',
 );
 has 'error' => (
-	isa => 'Str',
+	isa => Str,
 	is  => 'ro',
 	predicate => 'failed',
 );
 has 'data_callback' => (
 	init_arg => 'data',
-	traits  => ['Code'],
-	isa => 'CodeRef', is  => 'ro',
+	isa => CodeRef,
+	is  => 'ro',
 	default => sub { sub { {} } },
+	handles_via => 'Code',
 	handles => { data => 'execute' },
 );
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
