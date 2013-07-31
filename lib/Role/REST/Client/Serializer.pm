@@ -7,7 +7,7 @@ use Moose::Util::TypeConstraints;
 use Data::Serializer::Raw;
 
 has 'type' => (
-    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
+    isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded text/javascript}]),
     is  => 'rw',
 	default => 'application/json',
 );
@@ -33,6 +33,9 @@ our %modules = (
 	},
 	'application/x-www-form-urlencoded' => {
 		module => 'FORM',
+	},
+	'text/javascript' => {
+	        module => 'JSON',	
 	},
 );
 
