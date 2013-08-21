@@ -154,12 +154,12 @@ sub _call {
 	}
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
 	$self->reset_headers unless $args->{preserve_headers};
-	# Return an error if status 5XX
+	# Return here if there was an error
 	return $self->_new_rest_response(
 		code => $res->code,
 		response => $res,
 		error => $res->message,
-        ) if $res->code > 499;
+        ) if $res->is_error;
 
 	my $deserializer_cb = sub {
 		# Try to find a serializer for the result content

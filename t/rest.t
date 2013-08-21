@@ -56,14 +56,12 @@ for my $item (qw/post get put delete _call httpheaders/) {
     ok($obj->can($item), "Role method $item exists");
 }
 
-is_deeply($obj->httpheaders, $persistent_headers,
-  'headers should include persistent ones since first request');
+is_deeply($obj->httpheaders, $persistent_headers, 'headers should include persistent ones since first request');
 ok(my $res = $obj->bar, 'got a response object');
-is_deeply($obj->httpheaders, $persistent_headers,
-  'after first request, it contains persistent ones');
+is_deeply($obj->httpheaders, $persistent_headers, 'after first request, it contains persistent ones');
 isa_ok($res, 'Role::REST::Client::Response');
 isa_ok($res->response, 'HTTP::Response');
-is($res->data->{'error'}, 'Resource not found', 'deserialization works');
+is($res->code, 404, 'Resource not found');
 
 $obj->set_header('X-Foo', 'foo');
 is_deeply($obj->httpheaders, {
