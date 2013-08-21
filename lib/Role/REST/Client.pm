@@ -34,8 +34,8 @@ has user_agent => (
 
 sub _build_user_agent {
 	my $self = shift;
-	require HTTP::Tiny;
-	return HTTP::Tiny->new(%{$self->clientattrs});
+	require HTTP::Thin;
+	return HTTP::Thin->new(%{$self->clientattrs});
 }
 
 has persistent_headers => (
@@ -315,7 +315,7 @@ All methods return a response object dictated by _rest_response_class. Set to L<
 
 =head2 user_agent
 
-  sub _build_user_agent { HTTP::Tiny->new }
+  sub _build_user_agent { HTTP::Thin->new }
 
 A User Agent object which has a C<< ->request >> method suitably compatible with L<HTTP::Tiny>. It should accept arguments like this: C<< $ua->request($method, $uri, $opts) >>, and needs to return a hashref as HTTP::Tiny does, or an L<HTTP::Response> object.  To set your own default, use a C<_build_user_agent> method.
 
@@ -360,7 +360,7 @@ C<BUILD> method.
 
 =head2 clientattrs
 
-Attributes to feed the user agent object (which defaults to L<HTTP::Tiny>)
+Attributes to feed the user agent object (which defaults to L<HTTP::Thin>)
 
 e.g. {timeout => 10}
 
