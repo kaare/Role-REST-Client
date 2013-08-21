@@ -13,12 +13,12 @@ use utf8;
 
 	sub bar {
 		my ($self) = @_;
-		return $self->post('foo/bar/baz', {foo => 'bar'});
+		return $self->post('/foo/bar/baz', {foo => 'bar'});
         }
 
         sub baz {
 		my ($self) = @_;
-		return $self->post('foo/bar/baz', {foo => 'bar', bar => 'baz' });
+		return $self->post('/foo/bar/baz', {foo => 'bar', bar => 'baz' });
         }
 }
 {

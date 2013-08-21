@@ -234,7 +234,7 @@ Role::REST::Client - REST Client Role
 
 		sub bar {
 			my ($self) = @_;
-			my $res = $self->post('foo/bar/baz', {foo => 'bar'});
+			my $res = $self->post('/foo/bar/baz', {foo => 'bar'});
 			my $code = $res->code;
 			my $data = $res->data;
 			return $data if $code == 200;
@@ -253,7 +253,7 @@ Role::REST::Client - REST Client Role
 	# controller
 	sub foo : Local {
 		my ($self, $c) = @_;
-		my $res = $c->model('MyData')->post('foo/bar/baz', {foo => 'bar'});
+		my $res = $c->model('MyData')->post('/foo/bar/baz', {foo => 'bar'});
 		my $code = $res->code;
 		my $data = $res->data;
 		...
@@ -305,7 +305,7 @@ args - the optional argument parameter can have these entries
 
 	deserializer - if you KNOW that the content-type of the response is incorrect,
 	you can supply the correct content type, like
-	my $res = $self->post('foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
+	my $res = $self->post('/foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
 
 	preserve_headers - set this to true if you want to keep the headers between calls
 
