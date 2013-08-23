@@ -2,7 +2,7 @@ package Role::REST::Client;
 
 use Moo::Role;
 use MooX::HandlesVia;
-use MooX::Types::MooseLike::Base qw/:all/;
+use Types::Standard qw(HashRef Str Int Enum HasMethods);
 
 use HTTP::Tiny;
 use URI::Escape;
@@ -48,7 +48,7 @@ sub _build_user_agent {
 
 has persistent_headers => (
 	is        => 'lazy',
-	isa       => HashRef[Str],
+#	isa       => HashRef[Str],
 	default   => sub { {} },
 	trigger   => sub {
 		my ( $self, $header, $old_header ) = @_;

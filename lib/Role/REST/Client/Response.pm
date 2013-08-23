@@ -2,7 +2,7 @@ package Role::REST::Client::Response;
 
 use Moo;
 use MooX::HandlesVia;
-use MooX::Types::MooseLike::Base qw/:all/;
+use Types::Standard qw(Str Int CodeRef InstanceOf);
 
 has 'code' => (
 	isa => Int,

@@ -2,7 +2,7 @@ package Role::REST::Client::Serializer;
 
 use Try::Tiny;
 use Moo;
-use MooX::Types::MooseLike::Base qw/:all/;
+use Types::Standard qw(Enum InstanceOf);
 use Data::Serializer::Raw;
 
 has 'type' => (
