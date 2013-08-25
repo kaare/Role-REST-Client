@@ -8,7 +8,7 @@ use utf8;
 {
 	package RESTExample;
 
-	use Moose;
+	use Moo;
 	with 'Role::REST::Client';
 
 	sub bar {
@@ -23,10 +23,11 @@ use utf8;
 }
 {
   package UAClass;
-  use Moose;
+
+  use Moo;
   use JSON;
   use Test::More;
-  has 'timeout' => ( is => 'ro', isa => 'Int' );
+  has 'timeout' => ( is => 'ro');
   sub request {
     my ( $self, $method, $uri, $opts ) = @_;
     ok(!ref($opts->{'content'}), 'content key must be a scalar value due content-type');
@@ -41,6 +42,7 @@ use utf8;
     return $res;
   }
 }
+
 my $ua = UAClass->new(timeout => 5);
 my $persistent_headers = { 'Accept' => 'application/json' };
 my %testdata = (

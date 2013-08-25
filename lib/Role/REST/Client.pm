@@ -1,32 +1,40 @@
 package Role::REST::Client;
 
-use Moose::Role;
-use Moose::Util::TypeConstraints;
+use Moo::Role;
+use MooX::HandlesVia;
+use Types::Standard qw(HashRef Str Int Enum HasMethods);
+
+use HTTP::Tiny;
+use URI::Escape;
 use URI::Escape::XS 'uri_escape';
 use Try::Tiny;
-
 use Carp qw(confess);
-use Role::REST::Client::Serializer;
-use Role::REST::Client::Response;
 use HTTP::Response;
 use HTTP::Status 'status_message';
 use HTTP::Headers;
 
-with 'MooseX::Traits';
+use Role::REST::Client::Serializer;
+use Role::REST::Client::Response;
 
 has 'server' => (
-	isa => 'Str',
+	isa => Str,
 	is  => 'rw',
 );
+
 has 'type' => (
-	isa => enum ([qw{application/json application/xml application/yaml application/x-www-form-urlencoded}]),
+	isa => Enum[qw{application/json application/xml application/yaml application/x-www-form-urlencoded}],
 	is  => 'rw',
-	default => 'application/json',
+	default => sub { 'application/json' },
 );
-has clientattrs => (isa => 'HashRef', is => 'ro', default => sub {return {} });
+
+has clientattrs => (
+	isa => HashRef,
+	is => 'ro',
+	default => sub {return {} }
+);
 
 has user_agent => (
-	isa => duck_type([qw(request)]),
+	isa => HasMethods['request'],
 	is => 'ro',
 	lazy => 1,
 	builder => '_build_user_agent',
@@ -39,18 +47,17 @@ sub _build_user_agent {
 }
 
 has persistent_headers => (
-	traits    => ['Hash'],
-	is        => 'ro',
-	isa       => 'HashRef[Str]',
+	is        => 'lazy',
+#	isa       => HashRef[Str],
 	default   => sub { {} },
-        lazy      => 1,
-	trigger	  => sub {
+	trigger   => sub {
 		my ( $self, $header, $old_header ) = @_;
 		# Update httpheaders if their value was initialized first
 		while (my ($key, $value) = each %$header) {
 			$self->set_header($key, $value) unless $self->exist_header($key);
 		}
 	},
+	handles_via => 'Hash',
 	handles   => {
 		set_persistent_header     => 'set',
 		get_persistent_header     => 'get',
@@ -58,14 +65,12 @@ has persistent_headers => (
 		clear_persistent_headers  => 'clear',
 	},
 );
+
 has httpheaders => (
-	traits      => ['Hash'],
-	is          => 'ro',
-	isa         => 'HashRef[Str]',
-        lazy        => 1,
+	is          => 'lazy',
+	isa         => HashRef[Str],
 	writer      => '_set_httpheaders',
-	builder     => '_build_httpheaders',
-	initializer => '_build_httpheaders',
+	handles_via => 'Hash',
 	handles     => {
 		set_header     => 'set',
 		get_header     => 'get',
@@ -76,11 +81,10 @@ has httpheaders => (
 );
 
 has serializer_class => (
-	isa => 'ClassName', is => 'ro',
-	default => 'Role::REST::Client::Serializer',
+	isa => Str,
+	is => 'ro',
+	default => sub { 'Role::REST::Client::Serializer' },
 );
-
-no Moose::Util::TypeConstraints;
 
 sub _build_httpheaders {
 	my ($self, $headers) = @_;
@@ -174,7 +178,7 @@ sub _call {
 		code => $res->code,
 		response => $res,
 		data => $deserializer_cb,
-        );
+	);
 }
 
 sub _urlencode_data {
@@ -368,6 +372,10 @@ e.g. {timeout => 10}
 
 Kaare Rasmussen, <kaare at cpan dot com>
 
+=head1 CONTRIBUTORS
+
+Matt Phillips, (cpan:MATTP) <mattp@cpan.org>
+
 =head1 BUGS
 
 Please report any bugs or feature requests to bug-role-rest-client at rt.cpan.org, or through the
@@ -377,6 +385,6 @@ web interface at http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Role-REST-Client
 
 Copyright 2012 Kaare Rasmussen, all rights reserved.
 
-This library is free software; you can redistribute it and/or modify it under the same terms as 
-Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may 
+This library is free software; you can redistribute it and/or modify it under the same terms as
+Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may
 have available.
