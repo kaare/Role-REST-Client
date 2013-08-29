@@ -55,7 +55,7 @@ L<HTTP::Response> object. Use this if you need more information than status and 
 
 =head2 error
 
-The returned reason from L<HTTP::Tiny> where the status is 500 or higher. More detail may be provided 
+The error description returned from the user agent when the HTTP status code is 500 or higher. More detail may be found 
 by calling C<< $res->response->content >>.
 
 =head2 failed

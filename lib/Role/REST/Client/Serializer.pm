@@ -6,7 +6,7 @@ use Types::Standard qw(Enum InstanceOf);
 use Data::Serializer::Raw;
 
 has 'type' => (
-	isa => Enum[qw{application/json application/xml application/yaml application/x-www-form-urlencoded}],
+	isa => Enum[qw{application/json application/xml application/yaml application/x-www-form-urlencoded text/javascript}],
 	is  => 'rw',
 	default => sub { 'application/json' },
 );
@@ -30,6 +30,9 @@ our %modules = (
 	},
 	'application/x-www-form-urlencoded' => {
 		module => 'FORM',
+	},
+	'text/javascript' => {
+	        module => 'JSON',	
 	},
 );
 
