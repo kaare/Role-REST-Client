@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.16    2013-09-26 07:51:17 Europe/Copenhagen
  - Mooify Role::REST::Client (Matt Phillips)
  - Start deserializing text/javascript without a warning (Mark Stosberg)
  - Replace HTTP::Tiny with HTTP::Thin
