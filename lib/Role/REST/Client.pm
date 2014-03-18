@@ -267,7 +267,7 @@ Role::REST::Client - REST Client Role
 
 This REST Client role makes REST connectivety easy.
 
-Role::REST::Client will handle encoding and decoding when using the four HTTP verbs.
+Role::REST::Client will handle encoding and decoding when using the HTTP verbs.
 
 	GET
 	PUT
@@ -368,10 +368,6 @@ Attributes to feed the user agent object (which defaults to L<HTTP::Thin>)
 
 e.g. {timeout => 10}
 
-=head1 AUTHOR
-
-Kaare Rasmussen, <kaare at cpan dot com>
-
 =head1 CONTRIBUTORS
 
 Matt Phillips, (cpan:MATTP) <mattp@cpan.org>
@@ -380,11 +376,3 @@ Matt Phillips, (cpan:MATTP) <mattp@cpan.org>
 
 Please report any bugs or feature requests to bug-role-rest-client at rt.cpan.org, or through the
 web interface at http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Role-REST-Client.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2012 Kaare Rasmussen, all rights reserved.
-
-This library is free software; you can redistribute it and/or modify it under the same terms as
-Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may
-have available.

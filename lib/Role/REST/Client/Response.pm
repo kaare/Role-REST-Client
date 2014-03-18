@@ -66,19 +66,7 @@ True if the request didn't succeed.
 
 The deserialized data. Returns an empty hashref if the response was unsuccessful.
 
-=head1 AUTHOR
-
-Kaare Rasmussen, <kaare at cpan dot com>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to bug-role-rest-client at rt.cpan.org, or through the
 web interface at http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Role-REST-Client.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2012 Kaare Rasmussen, all rights reserved.
-
-This library is free software; you can redistribute it and/or modify it under the same terms as
-Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may
-have available.
