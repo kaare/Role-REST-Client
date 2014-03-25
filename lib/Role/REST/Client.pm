@@ -369,7 +369,10 @@ e.g. {timeout => 10}
 
 =head1 CONTRIBUTORS
 
+Breno G. de Oliveira, <garu@cpan.org>
+Mark Stosberg, <mark@stosberg.com>
 Matt Phillips, (cpan:MATTP) <mattp@cpan.org>
+Wallace Reis, <wallace@reis.me>
 
 =head1 BUGS
 
