@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Prevent 'redefined' warnings and updated dependency list (Breno G. de Oliveira)
 
 0.16    2013-09-26 07:51:17 Europe/Copenhagen
  - Mooify Role::REST::Client (Matt Phillips)

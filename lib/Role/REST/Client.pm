@@ -5,7 +5,6 @@ use MooX::HandlesVia;
 use Types::Standard qw(HashRef Str Int Enum HasMethods);
 
 use HTTP::Tiny;
-use URI::Escape;
 use URI::Escape::XS 'uri_escape';
 use Try::Tiny;
 use Carp qw(confess);
