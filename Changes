@@ -1,9 +1,16 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Prevent 'redefined' warnings and updated dependency list (Breno G. de Oliveira)
+
+0.16    2013-09-26 07:51:17 Europe/Copenhagen
+ - Mooify Role::REST::Client (Matt Phillips)
+ - Start deserializing text/javascript without a warning (Mark Stosberg)
+ - Replace HTTP::Tiny with HTTP::Thin
+ - Use HTTP::Response to determine if a request failed
 
 0.15    2013-03-28 22:38:29 Europe/Copenhagen
- - Pnly update httpheaders from persistent_headers if they are not already set.
+ - Only update httpheaders from persistent_headers if they are not already set.
 
 0.14    2013-03-28 21:17:06 Europe/Copenhagen
 
