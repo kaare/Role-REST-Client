@@ -1,6 +1,8 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+
+0.17    2014-04-22 19:58:08 Europe/Copenhagen
  - Prevent 'redefined' warnings and updated dependency list (Breno G. de Oliveira)
 
 0.16    2013-09-26 07:51:17 Europe/Copenhagen
