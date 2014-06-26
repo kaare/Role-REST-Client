@@ -156,14 +156,8 @@ sub _call {
 		$options{'headers'}{'content-length'} = length($options{'content'});
 	}
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
-	$self->reset_headers unless $args->{preserve_headers};
-	# Return here if there was an error
-	return $self->_new_rest_response(
-		code => $res->code,
-		response => $res,
-		error => $res->message,
-        ) if $res->is_error;
 
+	$self->reset_headers unless $args->{preserve_headers};
 	my $deserializer_cb = sub {
 		# Try to find a serializer for the result content
 		my $content_type = $args->{deserializer} || $res->header('Content-Type');
@@ -177,6 +171,7 @@ sub _call {
 		code => $res->code,
 		response => $res,
 		data => $deserializer_cb,
+		$res->is_error ? ( error => $res->message) : (),
 	);
 }
 
