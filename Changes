@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Decode the content even for http codes >= 400. There might be some information there (idea: moltar)
 
 0.17    2014-04-22 19:58:08 Europe/Copenhagen
  - Prevent 'redefined' warnings and updated dependency list (Breno G. de Oliveira)
