@@ -193,8 +193,6 @@ sub get { return shift->_request_with_query('GET', @_) }
 
 sub head { return shift->_request_with_query('HEAD', @_) }
 
-sub delete { return shift->_request_with_query('DELETE', @_) }
-
 sub _request_with_body {
 	my ($self, $method, $endpoint, $data, $args) = @_;
 	my $content = $data;
@@ -209,6 +207,8 @@ sub post { return shift->_request_with_body('POST', @_) }
 sub put { return shift->_request_with_body('PUT', @_) }
 
 sub options { return shift->_request_with_body('OPTIONS', @_) }
+
+sub delete { return shift->_request_with_query('DELETE', @_) }
 
 1;
 
@@ -264,11 +264,11 @@ This REST Client role makes REST connectivety easy.
 Role::REST::Client will handle encoding and decoding when using the HTTP verbs.
 
 	GET
+	HEAD
 	PUT
 	POST
 	DELETE
 	OPTIONS
-	HEAD
 
 Currently Role::REST::Client supports these encodings
 
@@ -285,9 +285,14 @@ x-www-form-urlencoded only works for GET and POST, and only for encoding, not de
 
 Role::REST::Client implements the standard HTTP 1.1 verbs as methods
 
-	post
+These methods can NOT have a request body
+
 	get
 	head
+
+These methods can take a request body.
+
+	post
 	put
 	delete
 	options
