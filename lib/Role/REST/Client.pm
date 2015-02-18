@@ -85,6 +85,12 @@ has serializer_class => (
 	default => sub { 'Role::REST::Client::Serializer' },
 );
 
+has serializer_options => (
+	isa => HashRef,
+	is => 'ro',
+	default => sub { return {} },
+);
+
 sub _build_httpheaders {
 	my ($self, $headers) = @_;
 	$headers ||= {};
@@ -120,7 +126,8 @@ sub _new_rest_response {
 
 sub new_serializer {
 	my ($self, @args) = @_;
-	$self->serializer_class->new(@args);
+	my %args = (%{ $self->serializer_options }, @args);
+	$self->serializer_class->new(%args);
 }
 
 sub _serializer {
@@ -366,6 +373,14 @@ C<BUILD> method.
 Attributes to feed the user agent object (which defaults to L<HTTP::Thin>)
 
 e.g. {timeout => 10}
+
+=head2 serializer_class
+
+You can override the serializer class and use your own. Default is 'Role::REST::Client::Serializer'
+
+=head2 serializer_options
+
+Options for the serializer instantiation.
 
 =head1 CONTRIBUTORS
 
