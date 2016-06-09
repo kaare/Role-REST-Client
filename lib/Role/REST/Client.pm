@@ -18,6 +18,7 @@ use Role::REST::Client::Response;
 has 'server' => (
 	isa => Str,
 	is  => 'rw',
+	default => '',
 );
 
 has 'type' => (
@@ -153,7 +154,6 @@ sub do_request {
 sub _call {
 	my ($self, $method, $endpoint, $data, $args) = @_;
 
-    $endpoint ||= ''; # Remove "Use of uninitialized value in concatenation (.) or string" warning
 	my $uri = $self->server.$endpoint;
 	# If no data, just call endpoint (or uri if GET w/parameters)
 	# If data is a scalar, call endpoint with data as content (POST w/parameters)
