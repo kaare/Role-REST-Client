@@ -3,6 +3,7 @@ Revision history for Role-REST-Client
 {{$NEXT}}
  - The standard is not clear on this, and some servers don't allow them, but it seems that DELETE can take a request body.
  - Added serializer_options so it's possible to instantiate the serializer w/ parameters
+ - Fixed "Use of uninitialized value in concatenation (.) or string" warning when $self->server is not initialized
 
 0.18    2014-06-26 22:28:12 Europe/Copenhagen
  - Decode the content even for http codes >= 400. There might be some information there (idea: moltar)
