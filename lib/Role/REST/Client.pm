@@ -267,7 +267,7 @@ Role::REST::Client - REST Client Role
 
 =head1 DESCRIPTION
 
-This REST Client role makes REST connectivety easy.
+This REST Client role makes REST connectivity easy.
 
 Role::REST::Client will handle encoding and decoding when using the HTTP verbs.
 
