@@ -51,6 +51,18 @@ my %testdata = (
 	user_agent => $ua,
         persistent_headers => $persistent_headers,
 );
+{
+    ok(my $client = RESTExample->new({
+	        server => 'http://localhost:3000',
+	        type => 'application/json',
+        }), 'New object');
+    is($client->has_no_headers, 1, 'client has no headers');
+    #is_deeply($client->httpheaders, {}, 'client has no headers');
+    $client->set_persistent_header('X-Test' => 'foo' );
+    is_deeply($client->httpheaders, { 'X-Test' => 'foo' },
+        'should have at least persistent_headers');
+
+}
 ok(my $obj = RESTExample->new(%testdata), 'New object');
 isa_ok($obj, 'RESTExample');
 
@@ -71,7 +83,7 @@ is_deeply($obj->httpheaders, {
   'X-Foo', 'foo',
 });
 
-$obj->reset_headers; # which would be like ->httpheaders($persistent_headers);
+$obj->reset_headers;
 is_deeply($obj->httpheaders, $persistent_headers,
   'should have at least persistent_headers');
 
@@ -81,8 +93,8 @@ ok(!exists($obj->persistent_headers->{'content-length'}));
 ok($res = $obj->baz, 'got a response obj');
 ok(!exists($obj->persistent_headers->{'content-length'}));
 
-$obj->clear_headers;
-is_deeply($obj->httpheaders, {}, 'new fresh httpheaders without persistent ones');
+$obj->clear_all_headers;
+is_deeply($obj->httpheaders, {}, 'All headers are cleared, even the persistent ones');
 
 my $newheaders = { 'X-Foo' => 'foo', 'Accept' => 'application/yaml' };
 ok($obj = RESTExample->new({ %testdata, httpheaders => $newheaders }));

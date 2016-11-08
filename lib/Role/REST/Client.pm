@@ -47,16 +47,9 @@ sub _build_user_agent {
 }
 
 has persistent_headers => (
-	is        => 'lazy',
+	is        => 'rw',
 #	isa       => HashRef[Str],
 	default   => sub { {} },
-	trigger   => sub {
-		my ( $self, $header, $old_header ) = @_;
-		# Update httpheaders if their value was initialized first
-		while (my ($key, $value) = each %$header) {
-			$self->set_header($key, $value) unless $self->exist_header($key);
-		}
-	},
 	handles_via => 'Hash',
 	handles   => {
 		set_persistent_header     => 'set',
@@ -66,10 +59,11 @@ has persistent_headers => (
 	},
 );
 
-has httpheaders => (
-	is          => 'lazy',
+has _httpheaders => (
+	is          => 'rw',
 	isa         => HashRef[Str],
-	writer      => '_set_httpheaders',
+	init_arg    => 'httpheaders',
+	default     => sub { {} },
 	handles_via => 'Hash',
 	handles     => {
 		set_header     => 'set',
@@ -77,8 +71,21 @@ has httpheaders => (
 		exist_header   => 'exists',
 		has_no_headers => 'is_empty',
 		clear_headers  => 'clear',
+		reset_headers  => 'clear',
 	},
 );
+
+sub httpheaders {
+    my $self = shift;
+	return { %{$self->persistent_headers}, %{$self->_httpheaders} };
+}
+
+sub clear_all_headers {
+    my $self = shift;
+	$self->clear_headers;
+	$self->clear_persistent_headers;
+	return {};
+}
 
 has serializer_class => (
 	isa => Str,
@@ -91,14 +98,6 @@ has serializer_options => (
 	is => 'ro',
 	default => sub { return {} },
 );
-
-sub _build_httpheaders {
-	my ($self, $headers) = @_;
-	$headers ||= {};
-	$self->_set_httpheaders( { %{$self->persistent_headers}, %$headers });
-}
-
-sub reset_headers {my $self = shift;$self->_set_httpheaders({ %{$self->persistent_headers} })}
 
 sub _rest_response_class { 'Role::REST::Client::Response' }
 
@@ -342,16 +341,6 @@ MIME Content-Type header,
 
 e.g. application/json
 
-=head2 httpheaders
-
-  $self->set_header('Header' => 'foo', ... );
-  $self->get_header('Header-Name');
-  $self->has_no_headers;
-  $self->clear_headers;
-
-You can set any http header you like with set_header, e.g.
-$self->set_header($key, $value) but the content-type header will be overridden.
-
 =head2 persistent_headers
 
   $self->set_persistent_header('Header' => 'foo', ... );
@@ -368,6 +357,31 @@ C<BUILD> method.
   has '+persistent_headers' => (
     default => sub { ... },
   );
+
+=head2 httpheaders
+
+  $self->set_header('Header' => 'foo', ... );
+  $self->get_header('Header-Name');
+  $self->has_no_headers;
+  $self->clear_headers;
+
+You can set any http header you like with set_header, e.g.
+$self->set_header($key, $value) but the content-type header will be overridden.
+
+http_headers will be reset after each request, unless there's a reserve_headers
+argument, but it's a hack. The recommended way to keep headers across requests
+is to store them in the persistent_headers.
+
+$self->httpheaders will return the combined hashref of persistent_headers and
+what's been added with set_header.
+
+For historical reasons, the two methods clear_headers and reset_headers are
+equal. Both will clear the headers for the current request, but NOT the
+persistent headers.
+
+To clear ALL headers, use
+
+  $self->clear_all_headers;
 
 =head2 clientattrs
 
