@@ -165,6 +165,13 @@ sub _call {
 	my $res = $self->_handle_response( $self->do_request($method, $uri, \%options) );
 
 	$self->reset_headers unless $args->{preserve_headers};
+
+	my $use_serializer = exists $args->{deserializer}
+		? defined $args->{deserializer} ? 1 : 0
+		: $res->header('Content-Type') =~
+			m{(?:text/(?:plain|html)|application/octet-stream)}
+			? 0 : 1;
+
 	my $deserializer_cb = sub {
 		# Try to find a serializer for the result content
 		my $content_type = $args->{deserializer} || $res->header('Content-Type');
@@ -174,10 +181,12 @@ sub _call {
 		$content = $deserializer->deserialize($content) if $deserializer && $content;
 		$content ||= {};
 	};
+
 	return $self->_new_rest_response(
 		code => $res->code,
 		response => $res,
-		data => $deserializer_cb,
+		data => $use_serializer
+			? $deserializer_cb : sub { $res->decoded_content },
 		$res->is_error ? ( error => $res->message) : (),
 	);
 }
