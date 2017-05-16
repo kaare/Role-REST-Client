@@ -295,6 +295,11 @@ Currently Role::REST::Client supports these encodings
 
 x-www-form-urlencoded only works for GET and POST, and only for encoding, not decoding.
 
+Responses which claim to not be serialised data (eg C<text/plain>,
+C<application/octet-stream>) will by default not be serialised. When the
+response is none of these, and it is impossible to determine what encoding is
+used, the content will be treated as JSON by default.
+
 =head1 METHODS
 
 =head2 methods
@@ -324,7 +329,11 @@ args - the optional argument parameter can have these entries
 
 	deserializer - if you KNOW that the content-type of the response is incorrect,
 	you can supply the correct content type, like
+
 	my $res = $self->post('/foo/bar/baz', {foo => 'bar'}, {deserializer => 'application/yaml'});
+
+	Alternatively, if you KNOW that the response is not serial data, you can
+	disable deserialization by setting this to undef.
 
 	preserve_headers - set this to true if you want to keep the headers between calls
 
