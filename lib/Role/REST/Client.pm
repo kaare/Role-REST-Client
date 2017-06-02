@@ -168,9 +168,7 @@ sub _call {
 
 	my $use_serializer = exists $args->{deserializer}
 		? defined $args->{deserializer} ? 1 : 0
-		: $res->header('Content-Type') =~
-			m{(?:text/(?:plain|html)|application/octet-stream)}
-			? 0 : 1;
+		: $res->header('Content-Type') !~ m{(?:text/(?:plain|html)|application/octet-stream)};
 
 	my $deserializer_cb = sub {
 		# Try to find a serializer for the result content

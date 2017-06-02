@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Allow for conditional serializers (José Joaquín Atria)
 
 0.19    2016-11-08 08:08:16 Europe/Copenhagen
  - The standard is not clear on this, and some servers don't allow them, but it seems that DELETE can take a request body.
