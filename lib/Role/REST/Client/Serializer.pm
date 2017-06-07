@@ -61,7 +61,7 @@ sub serialize {
 	try {
 		$result = $self->serializer->serialize($data)
 	} catch {
-		warn "Couldn't serialize data with " . $self->type;
+		warn "Couldn't serialize data with " . $self->type . ": $_";
 	};
 
 	return $result;
@@ -75,7 +75,7 @@ sub deserialize {
 	try {
 		$result = $self->serializer->deserialize($data);
 	} catch {
-		warn "Couldn't deserialize data with " . $self->type;
+		warn "Couldn't deserialize data with " . $self->type . ": $_";
 	};
 
 	return $result;

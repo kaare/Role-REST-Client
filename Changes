@@ -1,6 +1,7 @@
 Revision history for Role-REST-Client
 
 {{$NEXT}}
+ - Add a little info when dying
 
 0.20    2017-06-02 10:29:15 Europe/Copenhagen
  - Allow for conditional serializers (José Joaquín Atria)
