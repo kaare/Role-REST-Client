@@ -75,6 +75,9 @@ sub deserialize {
 	try {
 		$result = $self->serializer->deserialize($data);
 	} catch {
+        use Data::Dumper 'Dumper';
+        $Data::Dumper::Maxdepth = 4;
+        warn 'Data was ' . Dumper([ $data ]), ' ';
 		warn "Couldn't deserialize data with " . $self->type . ": $_";
 	};
 
