@@ -233,10 +233,6 @@ __END__
 
 =pod
 
-=head1 NAME
-
-Role::REST::Client - REST Client Role
-
 =head1 SYNOPSIS
 
 	{
